@@ -44,3 +44,13 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## 🔎 Fetch GitHub issues into content
+
+Fetch all open issues from a GitHub repository and save them as markdown files under `src/content/blog`:
+
+```sh
+GITHUB_TOKEN=ghp_your_token pnpm fetch:issues -- <owner> <repo>
+```
+
+You can also set `GITHUB_OWNER` and `GITHUB_REPO` environment variables instead of passing CLI arguments. Providing a GitHub token is optional but recommended to avoid hitting API rate limits. The script names each file using the pattern `<issue.id>_<issue title>.md` and copies the issue body into the markdown content.
