@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Fetch open issues into content
-        run: pnpm fetch:issues -- "${{ github.repository_owner }}" "${{ github.event.repository.name }}"
+        run: pnpm fetch:issues "${{ github.repository_owner }}" "${{ github.event.repository.name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
