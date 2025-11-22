@@ -56,7 +56,7 @@ import Layout from '../layouts/Layout.astro'
     };
 
     // --- 1. Hitokoto API ---
-    fetch('https://v1.hitokoto.cn?c=a&c=b&encode=json&charset=utf-8') // c=a 表示动画分类
+    fetch('/api/hitokoto') // Use local proxy to avoid CORS
         .then(response => response.json())
         .then(data => {
             console.log(data)
