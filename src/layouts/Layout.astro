@@ -1,0 +1,135 @@
+---
+import { ClientRouter } from 'astro:transitions'
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import '../styles/global.css'
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+        <!-- 引入 Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+
+        <!-- 关键修改：将主题检测脚本移至 Head，并设为 is:inline 以阻塞渲染，防止闪屏 -->
+        <script is:inline>
+            // 立即执行的函数，在页面内容渲染前判断并应用主题
+            (function() {
+                const getTheme = () => {
+                    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+                        return localStorage.getItem('theme');
+                    }
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                };
+
+                const theme = getTheme();
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+        </script>
+
+        <!-- Astro 5 的视图过渡路由 -->
+		<ClientRouter />
+	</head>
+	<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-200 transition-colors duration-300 min-h-screen flex flex-col font-sans antialiased">
+
+        <Header />
+
+		<main class="flex-grow w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 fade-in">
+			<slot />
+		</main>
+
+        <Footer />
+
+        <!-- Back to Top Button -->
+        <button id="back-to-top" class="fixed bottom-8 right-8 p-3 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-lg transition-all duration-500 transform translate-y-20 opacity-0 z-40 focus:outline-none" aria-label="返回顶部">
+            <i data-lucide="arrow-up" class="w-6 h-6"></i>
+        </button>
+
+        <script is:inline>
+            // 初始化 Lucide 图标
+            function initIcons() {
+                if (window.lucide) window.lucide.createIcons();
+            }
+
+            // 初始化返回顶部按钮逻辑
+            function initBackToTop() {
+                const backToTopBtn = document.getElementById('back-to-top');
+                if(backToTopBtn) {
+                    // 移除旧的监听器以防重复绑定 (虽然在 astro:page-load 这种场景下通常是全新的 DOM)
+                    window.removeEventListener('scroll', scrollHandler);
+
+                    window.addEventListener('scroll', scrollHandler);
+                    backToTopBtn.onclick = () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+                }
+            }
+
+            // 抽离滚动处理函数以便解绑
+            function scrollHandler() {
+                const backToTopBtn = document.getElementById('back-to-top');
+                if (!backToTopBtn) return;
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
+                } else {
+                    backToTopBtn.classList.add('translate-y-20', 'opacity-0');
+                }
+            }
+
+            // 主题切换逻辑
+            function initThemeToggle() {
+                const themeToggleBtn = document.getElementById('theme-toggle');
+                if(themeToggleBtn) {
+                    // 每次重新绑定前先克隆节点去除旧事件，或者直接重新绑定（简单起见直接覆盖onclick）
+                    themeToggleBtn.onclick = () => {
+                        const element = document.documentElement;
+                        if (element.classList.contains('dark')) {
+                            element.classList.remove('dark');
+                            localStorage.setItem('theme', 'light');
+                        } else {
+                            element.classList.add('dark');
+                            localStorage.setItem('theme', 'dark');
+                        }
+                        // 图标切换由 CSS (dark:hidden/block) 自动处理
+                    };
+                }
+            }
+
+            // 页面加载/切换时运行
+            document.addEventListener('astro:page-load', () => {
+                initIcons();
+                initBackToTop();
+                initThemeToggle();
+            });
+
+            // 视图过渡后确保主题状态正确 (防止从缓存恢复时状态丢失)
+            document.addEventListener('astro:after-swap', () => {
+                if (localStorage.getItem('theme') === 'dark' ||
+                   (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            });
+        </script>
+	</body>
+</html>
+
+<style is:global>
+    /* 其他全局样式可以放在这里，或者全部移入 global.css */
+</style>

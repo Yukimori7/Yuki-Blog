@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { getFormattedPosts } from '../utils/content'
+
+const posts = await getFormattedPosts()
+
+// 按年份分组
+const grouped = posts.reduce(
+  (acc, post) => {
+    if (!acc[post.year]) {
+      acc[post.year] = []
+    }
+    acc[post.year].push(post)
+    return acc
+  },
+  {} as Record<number, typeof posts>,
+)
+
+const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a))
+---
+
+<Layout title="归档 - 我的博客">
+    <div class="max-w-2xl mx-auto fade-in">
+        <h1 class="text-3xl font-bold mb-10 text-gray-900 dark:text-white text-center">归档</h1>
+
+        {years.map(year => (
+            <div class="relative mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 sticky top-20 bg-gray-50 dark:bg-slate-900 py-2 inline-block pr-4 z-10">{year}</h2>
+                <div class="border-l-2 border-gray-200 dark:border-slate-700 ml-2.5 space-y-8 pb-4">
+                    {grouped[Number(year)].map((post) => (
+                        <a href={`/posts/${post.slug}`} class="relative pl-8 cursor-pointer group block">
+                            <div class="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-slate-600 group-hover:bg-primary-500 transition-colors ring-4 ring-gray-50 dark:ring-slate-900"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
+                                <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-1 sm:mb-0">
+                                    {post.title}
+                                </h3>
+                                <span class="text-sm text-gray-400 dark:text-slate-500 font-mono shrink-0 sm:ml-4">
+                                    {post.date.substring(5)}
+                                </span>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            </div>
+        ))}
+    </div>
+</Layout>
