@@ -1,0 +1,52 @@
+name: Fetch GitHub Issues
+
+on:
+  workflow_dispatch:
+  issues:
+    types:
+      - opened
+      - edited
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch open issues into content
+        run: pnpm fetch:issues "${{ github.repository_owner }}" "${{ github.event.repository.name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Import GPG key"
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
+          commit_user_name: ${{ steps.import-gpg.outputs.name }}
+          commit_user_email: ${{ steps.import-gpg.outputs.email }}
+          commit_message: "chore: sync GitHub issues"
