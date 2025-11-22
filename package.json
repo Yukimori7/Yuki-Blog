@@ -15,6 +15,7 @@
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.19"
+    "@tailwindcss/typography": "^0.5.19",
+    "octokit": "^5.0.5"
   }
 }
