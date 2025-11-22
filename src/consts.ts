@@ -4,7 +4,7 @@ export const profile = {
   avatar: '/images/avatar.jpeg',
   socials: [
     { icon: 'iconoir:github', url: 'https://github.com/yukimori7' },
-    { icon: 'iconoir:x', url: 'https://x.com/tawawa_moe' },
+    { icon: 'iconoir:x', url: 'https://x.com/yukimori_7' },
     { icon: 'iconoir:mail', url: 'mailto:i@tawawa.moe' },
     { icon: 'iconoir:rss-feed', url: '/rss.xml' },
   ],
