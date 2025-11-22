@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
-    "octokit": "^5.0.5"
+    "octokit": "^5.0.5",
+    "wrangler": "^4.50.0"
   }
 }
