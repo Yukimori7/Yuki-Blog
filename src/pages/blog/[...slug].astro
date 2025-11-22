@@ -1,20 +1,86 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { render } from 'astro:content'
+import Layout from '../../layouts/Layout.astro'
+import { getFormattedPosts } from '../../utils/content'
 
+// 1. 生成静态路径 (SSG)
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
+  const posts = await getFormattedPosts()
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }))
 }
-type Props = CollectionEntry<'blog'>;
 
-const post = Astro.props;
-const { Content } = await render(post);
+const { post } = Astro.props
+
+// 2. 渲染 Markdown 内容 (Astro 5 新 API)
+const { Content } = await render(post.collectionEntry)
+
+// 3. 计算上一篇和下一篇
+const allPosts = await getFormattedPosts()
+const currentIndex = allPosts.findIndex((p) => p.id === post.id)
+const nextPost = allPosts[currentIndex - 1] // 因为列表是按时间倒序的，前面的索引是更新的文章
+const prevPost = allPosts[currentIndex + 1] // 后面的索引是更旧的文章
 ---
 
-<BlogPost {...post.data}>
-	<Content />
-</BlogPost>
+<Layout title={post.title}>
+    <div class="max-w-2xl mx-auto fade-in">
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="mb-6">
+                <a href="/" class="text-sm text-primary-500 hover:text-primary-600 flex items-center transition-colors w-fit">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> 返回列表
+                </a>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight mb-3">
+                {post.title}
+            </h1>
+            <time class="block text-sm text-gray-400 dark:text-slate-500 font-mono mb-6">
+                {post.date}
+            </time>
+
+            <div class="flex gap-2 mb-6">
+                {post.tags.map(tag => (
+                    <span class="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400">#{tag}</span>
+                ))}
+            </div>
+        </header>
+
+        <!-- Content: 完美同步 legacy_preview.html 中的排版样式 -->
+        <article class="
+            prose prose-lg md:prose-xl dark:prose-invert max-w-none text-justify mx-auto
+            prose-slate dark:prose-p:text-gray-300 prose-p:text-gray-700 prose-p:leading-loose
+            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900 dark:prose-headings:text-white
+            prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-a:no-underline hover:prose-a:underline hover:prose-a:text-primary-500 transition-colors
+            prose-strong:font-bold prose-strong:text-gray-900 dark:prose-strong:text-white
+            prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-code:font-mono
+            prose-pre:shadow-lg prose-pre:rounded-xl
+            prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-slate-800/50 prose-blockquote:px-6 prose-blockquote:py-2 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-gray-600 dark:prose-blockquote:text-gray-400
+            prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto
+            prose-li:marker:text-gray-400
+        ">
+            <Content />
+        </article>
+
+        <!-- Footer Divider -->
+        <div class="my-12 border-t border-gray-200 dark:border-slate-800"></div>
+
+        <!-- Navigation -->
+        <div class="flex flex-col sm:flex-row justify-between gap-4">
+            {nextPost ? (
+                <a href={`/posts/${nextPost.slug}`} class="flex-1 text-left group cursor-pointer block">
+                    <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">上一篇</div>
+                    <div class="text-primary-600 dark:text-primary-400 font-medium group-hover:underline truncate">{nextPost.title}</div>
+                </a>
+            ) : <div class="flex-1"></div>}
+
+            {prevPost ? (
+                <a href={`/posts/${prevPost.slug}`} class="flex-1 text-right group cursor-pointer block">
+                    <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">下一篇</div>
+                    <div class="text-primary-600 dark:text-primary-400 font-medium group-hover:underline truncate">{prevPost.title}</div>
+                </a>
+            ) : <div class="flex-1"></div>}
+        </div>
+    </div>
+</Layout>
