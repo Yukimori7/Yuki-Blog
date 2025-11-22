@@ -6,13 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-     "astro": "astro",
+    "astro": "astro",
     "fetch:issues": "node scripts/fetch-issues.mjs"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.11",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.16.0",
-    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {

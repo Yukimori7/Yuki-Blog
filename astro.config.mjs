@@ -1,11 +1,19 @@
 // @ts-check
 
+import cloudflare from '@astrojs/cloudflare'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
+  output: 'static',
+
+  site: 'https://tawawa.moe',
+
+  // 使用 Cloudflare 适配器
+  adapter: cloudflare({
+    imageService: 'compile', // 静态站点在构建时处理图片
+  }),
 
   markdown: {
     shikiConfig: {
