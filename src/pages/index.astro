@@ -1,4 +1,5 @@
 ---
+import { Icon } from 'astro-icon/components'
 import { profile } from '../consts'
 import Layout from '../layouts/Layout.astro'
 import { getFormattedPosts } from '../utils/content'
@@ -12,19 +13,21 @@ const recentPosts = allPosts.slice(0, 10)
 
 <Layout title="我的个人博客">
     <!-- Profile Card -->
-    <div class="flex flex-col items-center text-center mb-16 fade-in">
-        <div class="relative group">
+    <div class="flex flex-row items-center mb-16 fade-in max-w-2xl mx-auto">
+        <div class="relative group mr-6 sm:mr-8 shrink-0">
             <div class="absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-full opacity-75 group-hover:opacity-100 transition duration-500 blur"></div>
             <img src={profile.avatar} alt="Avatar" class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-800 shadow-lg object-cover bg-white" />
         </div>
-        <h1 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{profile.name}</h1>
-        <p class="mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-md font-medium">{profile.slogan}</p>
-        <div class="flex space-x-4 mt-4">
-            {profile.socials.map(s => (
-                <a href={s.url} class="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors transform hover:scale-110">
-                    <i data-lucide={s.icon} class="w-5 h-5"></i>
-                </a>
-            ))}
+        <div class="flex flex-col items-start text-left">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-primary-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">{profile.name}</h1>
+            <p class="mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-md font-medium">{profile.slogan}</p>
+            <div class="flex space-x-4 mt-3">
+                {profile.socials.map(s => (
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors transform hover:scale-110">
+                        <Icon name={s.icon} class="w-5 h-5" />
+                    </a>
+                ))}
+            </div>
         </div>
     </div>
 
@@ -59,7 +62,7 @@ const recentPosts = allPosts.slice(0, 10)
         <div class="flex justify-end mt-8 pt-4 border-t border-gray-100 dark:border-slate-800">
             <a href="/archive" class="group inline-flex items-center text-sm font-medium text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
                 查看全部
-                <i data-lucide="arrow-right" class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                <Icon name="iconoir:arrow-right" class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
         </div>
     </div>
