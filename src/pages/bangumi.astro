@@ -1,0 +1,227 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="我的番剧清单">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 fade-in">
+
+        <!-- Header: 一言 (Hitokoto) -->
+        <div class="text-center my-12 space-y-4">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">追番清单</h1>
+            <div id="hitokoto-box" class="relative inline-block max-w-2xl mx-auto p-6 rounded-xl bg-gray-50 dark:bg-slate-800/50 text-gray-600 dark:text-gray-300 italic">
+                <svg class="absolute top-4 left-4 w-6 h-6 text-gray-300 dark:text-slate-600 transform -scale-x-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.896 14.789 15.93 15.777 15.605C15.433 15.38 15.031 15.25 14.601 15.25C13.006 15.25 11.713 16.543 11.713 18.139L11.713 21L14.017 21ZM20.733 21L20.733 18C20.733 16.896 21.505 15.93 22.493 15.605C22.149 15.38 21.747 15.25 21.317 15.25C19.722 15.25 18.429 16.543 18.429 18.139L18.429 21L20.733 21ZM6.283 21L6.283 18C6.283 16.896 7.055 15.93 8.043 15.605C7.699 15.38 7.297 15.25 6.867 15.25C5.272 15.25 3.979 16.543 3.979 18.139L3.979 21L6.283 21ZM13.003 9.75C13.003 11.345 11.71 12.639 10.115 12.639L7.811 12.639L7.811 9.75C7.811 8.646 8.583 7.68 9.571 7.355C9.227 7.13 8.825 7 8.395 7C6.8 7 5.507 8.293 5.507 9.889L5.507 12.639L3.203 12.639L3.203 9.75C3.203 7.065 5.299 4.866 7.958 4.674C7.806 3.908 7.133 3.333 6.331 3.333C5.227 3.333 4.333 4.227 4.333 5.331L4.333 5.825L2.029 5.825L2.029 5.331C2.029 2.955 3.955 1.029 6.331 1.029C7.851 1.029 9.196 1.816 9.995 3.024C10.34 3.008 10.691 3 11.045 3C13.73 3 15.929 5.199 16.121 7.858C16.273 8.624 16.946 9.199 17.748 9.199C18.852 9.199 19.746 8.305 19.746 7.201L19.746 6.707L22.05 6.707L22.05 7.201C22.05 9.577 20.124 11.503 17.748 11.503C16.228 11.503 14.883 10.716 14.084 9.508C13.739 9.524 13.388 9.532 13.034 9.532L13.003 9.75Z" /></svg>
+                <p id="hitokoto-text" class="text-lg font-medium px-8 min-h-[2rem]">正在加载动漫一言...</p>
+                <div class="mt-4 text-right text-sm text-gray-400 dark:text-gray-500">
+                    —— <span id="hitokoto-from">未知</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs: 样式直接写在 class 中，避免使用 @apply 导致的编译问题 -->
+        <div class="flex justify-center space-x-2 mb-10 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-gray-100 dark:border-slate-800 w-fit mx-auto shadow-sm">
+            <button class="bgm-tab px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-slate-800 data-[active=true]:bg-primary-500 data-[active=true]:text-white data-[active=true]:shadow-md data-[active=true]:shadow-primary-500/20 data-[active=true]:hover:bg-primary-600" data-type="watching" data-active="true">在看</button>
+            <button class="bgm-tab px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-slate-800 data-[active=true]:bg-primary-500 data-[active=true]:text-white data-[active=true]:shadow-md data-[active=true]:shadow-primary-500/20 data-[active=true]:hover:bg-primary-600" data-type="watched" data-active="false">已看</button>
+            <button class="bgm-tab px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-slate-800 data-[active=true]:bg-primary-500 data-[active=true]:text-white data-[active=true]:shadow-md data-[active=true]:shadow-primary-500/20 data-[active=true]:hover:bg-primary-600" data-type="want" data-active="false">想看</button>
+        </div>
+
+        <!-- Grid List -->
+        <div id="bgm-collection" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <!-- Items will be injected here -->
+        </div>
+
+        <!-- Pagination / Loading -->
+        <div class="text-center mt-12 mb-20">
+            <button id="bgm-loadmore" class="hidden px-6 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-400 dark:hover:text-primary-400 transition-all shadow-sm text-sm font-medium">
+                加载更多
+            </button>
+            <div id="bgm-loading" class="hidden">
+                <div class="flex justify-center">
+                    <img src="/images/loading.gif" alt="Loading..." class="w-12 h-12" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</Layout>
+
+<!-- 移除了 <style> 块，避免 @apply 错误 -->
+
+<script is:inline>
+    // 配置区域
+    const bgmConfig = {
+        // 替换为您自己的后端地址
+        apiUrl: "https://bangumi-tv-api.tawawa.moe",
+        // 开启模拟数据用于演示 (已关闭)
+        ENABLE_MOCK: false
+    };
+
+    // --- 1. Hitokoto API ---
+    fetch('https://v1.hitokoto.cn?c=a&c=b&encode=json&charset=utf-8') // c=a 表示动画分类
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            const textEl = document.getElementById('hitokoto-text');
+            const fromEl = document.getElementById('hitokoto-from');
+            if(textEl && fromEl) {
+                textEl.innerText = data.hitokoto;
+                fromEl.innerText = data.from_who ? `${data.from}  ·  ${data.from_who}` : data.from;
+            }
+        })
+        .catch(console.error);
+
+    // --- 2. Bangumi Logic ---
+    let currentPage = 0;
+    let currentType = 'watching';
+    const limit = 12;
+    let totalItems = 0;
+
+    const collectionEl = document.getElementById('bgm-collection');
+    const loadMoreBtn = document.getElementById('bgm-loadmore');
+    const loadingEl = document.getElementById('bgm-loading');
+    const tabs = document.querySelectorAll('.bgm-tab');
+
+    // Mock Data Generator
+    function getMockData(type, page) {
+        const titles = ["葬送的芙莉莲", "鬼灭之刃", "进击的巨人", "间谍过家家", "咒术回战", "电锯人", "孤独摇滚", "边缘行者"];
+        const covers = [
+            "https://lain.bgm.tv/pic/cover/l/c8/18/399379_v4441.jpg",
+            "https://lain.bgm.tv/pic/cover/l/71/52/253046_2k2k2.jpg",
+            "https://lain.bgm.tv/pic/cover/l/00/ad/253_u85m8.jpg"
+        ];
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const items = Array.from({ length: limit }, (_, i) => {
+                    const id = page * limit + i;
+                    return {
+                        subject_id: id,
+                        name: titles[id % titles.length],
+                        name_cn: titles[id % titles.length],
+                        summary: "这是关于一段冒险的精彩故事...",
+                        images: { large: covers[id % covers.length] },
+                        eps: 24,
+                        ep_status: type === 'watched' ? 24 : Math.floor(Math.random() * 24),
+                        score: 9.5
+                    };
+                });
+                resolve({
+                    data: items,
+                    total: 50 // Mock total count
+                });
+            }, 600); // Fake delay
+        });
+    }
+
+    async function fetchBangumi(type, page) {
+        loadingEl.classList.remove('hidden');
+        loadMoreBtn.classList.add('hidden');
+
+        try {
+            let data;
+            if (bgmConfig.ENABLE_MOCK || !bgmConfig.apiUrl) {
+                data = await getMockData(type, page);
+            } else {
+                const res = await fetch(`${bgmConfig.apiUrl}/bangumi?type=${type}&offset=${(page - 1) * limit}&limit=${limit}`);
+                data = await res.json();
+            }
+
+            renderList(data.data, type);
+            totalItems = data.total;
+
+            loadingEl.classList.add('hidden');
+            if (collectionEl.children.length < totalItems) {
+                loadMoreBtn.classList.remove('hidden');
+            }
+        } catch (err) {
+            console.error("Failed to load bangumi:", err);
+            loadingEl.classList.add('hidden');
+            collectionEl.innerHTML += `<p class="col-span-full text-center text-red-500">加载失败，请稍后再试</p>`;
+        }
+    }
+
+    function renderList(items, type) {
+        const html = items.map(item => {
+            const totalEp = item.eps || '?';
+            const ep = type === 'watched' ? totalEp : (item.ep_status || 0);
+            const percentage = (typeof totalEp === 'number' && totalEp > 0) ? Math.min(100, (ep / totalEp) * 100) : 0;
+            const cover = item.images.large || item.images.common || item.images.medium;
+
+            return `
+            <a href="https://bgm.tv/subject/${item.subject_id}" target="_blank" class="group relative block bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-slate-700/50">
+                <!-- Cover Image -->
+                <div class="relative w-full h-0 pb-[140%] overflow-hidden bg-gray-200 dark:bg-slate-700">
+                    <img src="${cover}" alt="${item.name}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+
+                <!-- Info -->
+                <div class="p-4">
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 truncate text-sm mb-1" title="${item.name_cn || item.name}">${item.name_cn || item.name}</h3>
+
+                    <!-- Progress Bar -->
+                    <div class="mt-3">
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-mono">
+                            <span>${ep} / ${totalEp}</span>
+                            <span>${Math.round(percentage)}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-primary-500 h-1.5 rounded-full transition-all duration-500 ease-out" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            `;
+        }).join('');
+
+        if (currentPage === 1) {
+            collectionEl.innerHTML = html;
+        } else {
+            collectionEl.insertAdjacentHTML('beforeend', html);
+        }
+    }
+
+    function switchTab(type) {
+        if (currentType === type) return;
+
+        currentType = type;
+        currentPage = 1;
+        collectionEl.innerHTML = ''; // Clear list
+
+        // Update tab styles using data-active attribute
+        tabs.forEach(tab => {
+            if (tab.dataset.type === type) {
+                // tab.classList.add('active'); // 移除旧逻辑
+                tab.setAttribute('data-active', 'true');
+            } else {
+                // tab.classList.remove('active'); // 移除旧逻辑
+                tab.setAttribute('data-active', 'false');
+            }
+        });
+
+        fetchBangumi(type, currentPage);
+    }
+
+    // Event Listeners
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => switchTab(e.target.dataset.type));
+    });
+
+    loadMoreBtn.addEventListener('click', () => {
+        currentPage++;
+        fetchBangumi(currentType, currentPage);
+    });
+
+    // Init
+    document.addEventListener('astro:page-load', () => {
+        // Reset state on page load (for View Transitions)
+        currentPage = 1;
+        switchTab('watched');
+    });
+
+    // Initial load if not using View Transitions or first load
+    if (!window.astroPageLoadTriggered) {
+        currentPage = 1;
+        fetchBangumi('watched', 1);
+        window.astroPageLoadTriggered = true;
+    }
+</script>
