@@ -1,5 +1,7 @@
 ---
 // Header.astro
+import { Icon } from 'astro-icon/components'
+
 const navItems = [
   { name: '首页', href: '/' },
   { name: '归档', href: '/archive' },
@@ -9,17 +11,15 @@ const navItems = [
 ---
 
 <header class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    <div class="max-w-2xl mx-auto">
+        <div class="flex items-center h-16">
             <!-- Left: Logo -->
-            <a href="/" class="flex-shrink-0 cursor-pointer group">
-                <span class="text-xl font-bold tracking-tighter text-gray-900 dark:text-white group-hover:text-primary-600 transition-colors">
-                    Dev<span class="text-primary-500">Log</span>.
-                </span>
+            <a href="/" class="flex-shrink-0 cursor-pointer group mr-auto">
+                <img src="/logo.svg" alt="Logo" class="h-8 w-8 dark:invert" />
             </a>
 
             <!-- Middle: Navigation Tabs (Desktop) -->
-            <nav class="hidden md:flex space-x-8">
+            <nav class="hidden md:flex space-x-6 mr-4">
                 {navItems.map(item => (
                     <a href={item.href} class="text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-white transition-colors">
                         {item.name}
@@ -30,13 +30,13 @@ const navItems = [
             <!-- Right: Dark Mode & Mobile Menu -->
             <div class="flex items-center space-x-4">
                 <button id="theme-toggle" class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-slate-800 focus:outline-none transition-colors">
-                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                    <Icon name="iconoir:half-moon" class="w-5 h-5 hidden dark:block" />
+                    <Icon name="iconoir:sun-light" class="w-5 h-5 block dark:hidden" />
                 </button>
 
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="p-2 text-gray-600 dark:text-gray-300">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
+                        <Icon name="iconoir:menu" class="w-6 h-6" />
                     </button>
                 </div>
             </div>

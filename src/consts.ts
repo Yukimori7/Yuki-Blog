@@ -1,12 +1,11 @@
 export const profile = {
-  name: 'Alex.Designer',
-  slogan: '设计是无声的语言，代码是逻辑的诗篇。',
-  avatar:
-    'https://api.dicebear.com/7.x/notionists/svg?seed=Alex&backgroundColor=e0f2fe',
+  name: "YukiMori's Blog",
+  slogan: 'Code for fun, Code for ACG',
+  avatar: '/images/avatar.jpeg',
   socials: [
-    { icon: 'github', url: '#' },
-    { icon: 'twitter', url: '#' },
-    { icon: 'mail', url: '#' },
-    { icon: 'figma', url: '#' },
+    { icon: 'iconoir:github', url: 'https://github.com/yukimori7' },
+    { icon: 'iconoir:x', url: 'https://x.com/tawawa_moe' },
+    { icon: 'iconoir:mail', url: 'mailto:i@tawawa.moe' },
+    { icon: 'iconoir:rss-feed', url: '/rss.xml' },
   ],
 }

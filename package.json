@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.11",
+    "@iconify-json/iconoir": "^1.2.10",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.16.0",
+    "astro-icon": "^1.1.5",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
@@ -20,12 +22,7 @@
     "octokit": "^5.0.5",
     "wrangler": "^4.50.0"
   },
-
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
+    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
   }
 }
