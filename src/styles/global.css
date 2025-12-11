@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scrollbar-gutter: stable;
+}
+
 @plugin "@tailwindcss/typography";
 
 /* v4 主题配置
