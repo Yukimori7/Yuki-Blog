@@ -10,10 +10,10 @@
     "fetch:issues": "node scripts/fetch-issues.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.11",
+    "@astrojs/cloudflare": "^12.6.12",
     "@iconify-json/iconoir": "^1.2.10",
     "@tailwindcss/vite": "^4.1.17",
-    "astro": "^5.16.0",
+    "astro": "^5.16.6",
     "astro-icon": "^1.1.5",
     "tailwindcss": "^4.1.17"
   },
@@ -23,6 +23,11 @@
     "wrangler": "^4.50.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
-  }
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
+  },
+  "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402"
 }
