@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YukiMori's Blog</title>
+    
+    <!-- 引入 Tailwind CSS v4 Browser 引擎 -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @theme {
+            --color-canvas: #f5f4ed;      /* Parchment */
+            --color-elevated: #faf9f5;    /* Ivory */
+            --color-primary: #141413;     /* Near Black */
+            --color-secondary: #5e5d59;   /* Olive Gray */
+            --color-tertiary: #87867f;    /* Stone Gray */
+            --color-brand: #c96442;       /* Terracotta Brand */
+            --color-subtle: #f0eee6;      /* Border Cream */
+            
+            --font-serif: 'Anthropic Serif', Georgia, 'Times New Roman', serif;
+            --font-sans: 'Anthropic Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Anthropic Mono', ui-monospace, 'Cascadia Code', monospace;
+        }
+
+        html[data-theme="dark"] {
+            --color-canvas: #141413;      /* Deep Dark */
+            --color-elevated: #30302e;    /* Dark Surface */
+            --color-primary: #faf9f5;     /* Ivory */
+            --color-secondary: #b0aea5;   /* Warm Silver */
+            --color-tertiary: #87867f;    /* Stone Gray */
+            --color-brand: #d97757;       /* Coral Accent */
+            --color-subtle: #30302e;      /* Border Dark */
+        }
+
+        html[data-theme="dark"] #moon-icon { display: none; }
+        html[data-theme="dark"] #sun-icon { display: block; }
+        html:not([data-theme="dark"]) #moon-icon { display: block; }
+        html:not([data-theme="dark"]) #sun-icon { display: none; }
+
+        body {
+            @apply bg-canvas text-primary font-sans leading-relaxed antialiased transition-colors duration-300;
+        }
+
+        nav a {
+            @apply text-secondary hover:text-primary transition-colors cursor-pointer text-base;
+        }
+        
+        nav a.active {
+            @apply text-primary font-medium;
+        }
+
+        .page-view {
+            @apply hidden flex-1 animate-[fadeIn_0.4s_ease_forwards];
+        }
+
+        .page-view.active {
+            @apply block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-[800px] mx-auto px-6 min-h-screen flex flex-col">
+        
+        <!-- 头部与导航 -->
+        <header class="flex justify-between items-center py-10 mb-16 border-b border-subtle transition-colors duration-300">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('home')">
+                <svg class="w-6 h-6 fill-primary group-hover:fill-brand transition-colors" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+                </svg>
+            </div>
+            
+            <nav class="flex items-center gap-6">
+                <a onclick="switchTab('home')" id="nav-home" class="active">首页</a>
+                <a onclick="switchTab('archive')" id="nav-archive">归档</a>
+                <a href="#anime">番剧</a>
+                <a href="#about">关于</a>
+                <button onclick="toggleTheme()" class="text-secondary hover:text-primary transition-colors p-1 cursor-pointer" title="切换主题">
+                    <svg id="moon-icon" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg id="sun-icon" class="w-5 h-5 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+            </nav>
+        </header>
+
+        <!-- =========================================
+             视图 1：首页
+             ========================================= -->
+        <main id="view-home" class="page-view active">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-20">
+                <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=240&h=240" 
+                     alt="Avatar" 
+                     class="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-[32px] object-cover ring-1 ring-subtle transition-colors duration-300">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-4xl sm:text-[44px] leading-tight font-serif font-medium text-brand">YukiMori's Blog</h1>
+                    <p class="text-[20px] text-secondary transition-colors duration-300">Code for fun, Code for ACG</p>
+                    <div class="flex gap-4 mt-2">
+                        <a href="#" class="group" title="GitHub"><svg class="w-5 h-5 fill-tertiary group-hover:fill-brand transition-colors" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-[14px] text-tertiary tracking-wide mb-8 transition-colors duration-300 font-medium">
+                最近文章
+            </div>
+
+            <article class="group cursor-pointer mb-12" onclick="switchTab('article')">
+                <div class="text-[14px] text-tertiary font-mono mb-3 flex items-center gap-2 transition-colors duration-300">
+                    <span class="w-[2px] h-3 bg-brand inline-block rounded-full"></span>
+                    2025-10-15
+                </div>
+                <h2 class="text-[32px] leading-[1.2] mb-4 font-serif font-medium text-primary group-hover:text-brand transition-colors duration-300">
+                    Markdown 测试
+                </h2>
+                <div class="text-[17px] text-secondary line-clamp-2 transition-colors duration-300">
+                    > 明月几时有？把酒问青天。不知天上宫阙，今夕是何年。我欲乘风归去，又恐琼楼玉宇，高处不胜寒。起舞弄清影，何似在人间。
+                </div>
+            </article>
+
+            <!-- 纯净的查看全部按钮，四周无任何边框线 -->
+            <div class="flex justify-end mt-12 mb-8">
+                <span onclick="switchTab('archive')" class="group cursor-pointer flex items-center gap-2 text-[15px] text-secondary hover:text-brand transition-colors">
+                    查看全部
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </span>
+            </div>
+        </main>
+
+        <!-- =========================================
+             视图 2：归档页 
+             ========================================= -->
+        <main id="view-archive" class="page-view">
+            <h1 class="text-[52px] leading-[1.2] mb-16 font-serif font-medium text-primary transition-colors duration-300">归档</h1>
+            
+            <div class="mb-14">
+                <h2 class="text-[26px] text-tertiary mb-6 font-serif font-medium transition-colors duration-300 tracking-wide">2025</h2>
+                <ul class="flex flex-col gap-2">
+                    <li class="flex items-baseline py-3 px-4 -mx-4 rounded-[12px] cursor-pointer group hover:bg-elevated transition-all duration-300" onclick="switchTab('article')">
+                        <span class="w-[80px] shrink-0 text-[15px] text-tertiary font-mono group-hover:text-brand transition-colors">10-15</span>
+                        <span class="text-[20px] text-primary font-serif font-medium group-hover:text-brand transition-colors">Markdown 测试</span>
+                    </li>
+                    <li class="flex items-baseline py-3 px-4 -mx-4 rounded-[12px] cursor-pointer group hover:bg-elevated transition-all duration-300" onclick="switchTab('article')">
+                        <span class="w-[80px] shrink-0 text-[15px] text-tertiary font-mono group-hover:text-brand transition-colors">08-22</span>
+                        <span class="text-[20px] text-primary font-serif font-medium group-hover:text-brand transition-colors">Astro 搭建指南与优化</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 纯净的分页器，四周无任何边框线 -->
+            <div class="mt-20 flex items-center justify-center gap-8 font-mono text-[14px] mb-8">
+                <button class="text-tertiary cursor-not-allowed opacity-50 flex items-center gap-2" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Prev
+                </button>
+                <span class="text-secondary tracking-widest">1 / 5</span>
+                <button class="text-primary hover:text-brand cursor-pointer transition-colors flex items-center gap-2">
+                    Next
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- =========================================
+             视图 3：标签聚合页
+             ========================================= -->
+        <main id="view-tag" class="page-view">
+            <div class="text-[14px] text-tertiary tracking-wide mb-4 transition-colors duration-300">
+                当前标签
+            </div>
+            <h1 id="dynamic-tag-title" class="text-[52px] leading-[1.2] mb-16 font-serif font-medium text-brand transition-colors duration-300">#Markdown</h1>
+            
+            <div class="mb-14">
+                <ul class="flex flex-col gap-2">
+                    <li class="flex items-baseline py-3 px-4 -mx-4 rounded-[12px] cursor-pointer group hover:bg-elevated transition-all duration-300" onclick="switchTab('article')">
+                        <span class="w-[80px] shrink-0 text-[15px] text-tertiary font-mono group-hover:text-brand transition-colors">10-15</span>
+                        <span class="text-[20px] text-primary font-serif font-medium group-hover:text-brand transition-colors">Markdown 测试</span>
+                    </li>
+                    <li class="flex items-baseline py-3 px-4 -mx-4 rounded-[12px] cursor-pointer group hover:bg-elevated transition-all duration-300" onclick="switchTab('article')">
+                        <span class="w-[80px] shrink-0 text-[15px] text-tertiary font-mono group-hover:text-brand transition-colors">04-02</span>
+                        <span class="text-[20px] text-primary font-serif font-medium group-hover:text-brand transition-colors">那些年写过的 MDX 进阶语法</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 纯净的分页器，四周无任何边框线 -->
+            <div class="mt-20 flex items-center justify-center gap-8 font-mono text-[14px] mb-8">
+                <button class="text-tertiary cursor-not-allowed opacity-50 flex items-center gap-2" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Prev
+                </button>
+                <span class="text-secondary tracking-widest">1 / 2</span>
+                <button class="text-primary hover:text-brand cursor-pointer transition-colors flex items-center gap-2">
+                    Next
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- =========================================
+             视图 4：文章详情页
+             ========================================= -->
+        <main id="view-article" class="page-view">
+            <h1 class="text-4xl sm:text-[64px] leading-[1.1] mb-8 font-serif font-medium text-primary transition-colors duration-300">Markdown 测试</h1>
+            
+            <div class="flex items-center gap-4 mb-16 transition-colors duration-300">
+                <span class="text-[15px] font-mono text-tertiary">2025-10-15</span>
+                <span class="text-tertiary">/</span>
+                <div class="flex gap-4 text-[15px] font-mono text-tertiary">
+                    <span onclick="switchTab('tag', 'Markdown')" class="cursor-pointer hover:text-brand transition-colors">#Markdown</span>
+                    <span onclick="switchTab('tag', '技术随笔')" class="cursor-pointer hover:text-brand transition-colors">#技术随笔</span>
+                </div>
+            </div>
+            
+            <article class="text-[17px] text-secondary transition-colors duration-300">
+                <p class="mb-6">这是一篇用来测试 Markdown 渲染样式的文章。根据设计规范，正文应当拥有极为宽松的行高，让阅读体验如读散文般顺畅。</p>
+
+                <blockquote class="bg-elevated border-l-4 border-brand py-6 px-8 my-8 rounded-r-xl text-primary font-serif text-[18px] transition-colors duration-300">
+                    明月几时有？把酒问青天。不知天上宫阙，今夕是何年。我欲乘风归去，又恐琼楼玉宇，高处不胜寒。起舞弄清影，何似在人间。
+                </blockquote>
+
+                <h2 class="text-[32px] mt-12 mb-6 text-primary font-serif font-medium transition-colors duration-300">代码排版效果</h2>
+                
+<pre class="bg-elevated border border-subtle p-6 rounded-xl overflow-x-auto my-8 transition-colors duration-300">
+<code class="font-mono text-[15px] text-primary transition-colors duration-300">function initClaudeDesignSystem() {
+    console.log("Loading Anthropic typography...");
+    const theme = "Parchment Mode";
+    return { status: "success" };
+}</code>
+</pre>
+            </article>
+        </main>
+
+        <!-- =========================================
+             页脚：极其坚决地删除了 border-t，实现 100% 留白过渡
+             ========================================= -->
+        <footer class="mt-auto pt-10 pb-10 flex justify-between text-[14px] text-tertiary transition-colors duration-300">
+            <div>© 2025 YukiMori</div>
+            <div>Powered by Astro & Tailwind v4</div>
+        </footer>
+
+    </div>
+
+    <!-- 交互脚本 -->
+    <script>
+        function switchTab(tabId, tagName = null) {
+            document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
+
+            const targetNav = document.getElementById('nav-' + tabId);
+            if (targetNav) targetNav.classList.add('active');
+
+            if (tabId === 'tag' && tagName) {
+                document.getElementById('dynamic-tag-title').innerText = '#' + tagName;
+            }
+
+            document.getElementById('view-' + tabId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+        }
+    </script>
+</body>
+</html>
