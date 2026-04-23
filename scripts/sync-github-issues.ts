@@ -102,11 +102,9 @@ async function fetchAllIssuesWithOctokit(
   return issues as Issue[]
 }
 
-async function readBlogMarkdownFiles(blogDir: string): Promise<string[]> {
-  const entries = await fs.readdir(blogDir, { withFileTypes: true })
-  return entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
-    .map((entry) => entry.name)
+async function resetBlogDirectory(blogDir: string): Promise<void> {
+  await fs.rm(blogDir, { recursive: true, force: true })
+  await fs.mkdir(blogDir, { recursive: true })
 }
 
 async function main() {
@@ -139,50 +137,22 @@ async function main() {
     )
   }
   const openIssues = ownerFiltered.filter((item) => item.state === 'open')
-  const closedIssueNumbers = new Set(
-    ownerFiltered.filter((item) => item.state === 'closed').map((item) => item.number)
-  )
 
   console.log(`[Stats] total(raw): ${allIssues.length}`)
   console.log(`[Stats] total(issues-only): ${pureIssues.length}`)
   console.log(`[Stats] excluded(non-owner issues): ${pureIssues.length - ownerFiltered.length}`)
   console.log(`[Stats] open(after filter): ${openIssues.length}`)
-  console.log(`[Stats] closed(after filter): ${closedIssueNumbers.size}`)
+  console.log(`[Stats] closed(after filter): ${ownerFiltered.length - openIssues.length}`)
 
-  const existingFiles = await readBlogMarkdownFiles(blogDir)
-  const removedFiles: string[] = []
+  await resetBlogDirectory(blogDir)
+  console.log('[Clean] reset blog directory (all existing files removed)')
+
   const writtenFiles: string[] = []
-
-  for (const fileName of existingFiles) {
-    const match = /^(\d+)-.+\.md$/.exec(fileName)
-    if (!match) continue
-
-    const issueNumber = Number(match[1])
-    if (!closedIssueNumbers.has(issueNumber)) continue
-
-    const fullPath = path.join(blogDir, fileName)
-    await fs.unlink(fullPath)
-    removedFiles.push(fileName)
-    console.log(`[Clean] removed closed issue file: ${fileName}`)
-  }
 
   for (const issue of openIssues) {
     const safeTitle = sanitizeFileNamePart(issue.title) || `issue-${issue.number}`
     const targetFile = `${issue.number}-${safeTitle}.md`
     const targetPath = path.join(blogDir, targetFile)
-
-    const sameNumberFiles = existingFiles.filter((name) => name.startsWith(`${issue.number}-`))
-    for (const oldName of sameNumberFiles) {
-      if (oldName === targetFile) continue
-      const oldPath = path.join(blogDir, oldName)
-      try {
-        await fs.unlink(oldPath)
-        removedFiles.push(oldName)
-        console.log(`[Clean] removed stale title file: ${oldName}`)
-      } catch {
-        // Ignore deletion failure for already-removed files.
-      }
-    }
 
     const markdown = buildMarkdown(issue)
     await fs.writeFile(targetPath, markdown, 'utf8')
@@ -190,14 +160,10 @@ async function main() {
     console.log(`[Write] ${targetFile}`)
   }
 
-  console.log(`[Done] written=${writtenFiles.length}, removed=${removedFiles.length}`)
+  console.log(`[Done] written=${writtenFiles.length}`)
   if (writtenFiles.length > 0) {
     console.log('[Done] written files:')
     for (const file of writtenFiles) console.log(`  - ${file}`)
-  }
-  if (removedFiles.length > 0) {
-    console.log('[Done] removed files:')
-    for (const file of removedFiles) console.log(`  - ${file}`)
   }
 }
 
