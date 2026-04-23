@@ -1,4 +1,4 @@
-name: Fetch GitHub Issues
+name: sync-github-issues
 
 on:
   workflow_dispatch:
@@ -8,30 +8,26 @@ on:
       - edited
 
 jobs:
-  fetch:
+  sync-github-issues:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: pnpm
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
-      - name: Fetch open issues into content
-        run: pnpm fetch:issues "${{ github.repository_owner }}" "${{ github.event.repository.name }}"
+      - name: Sync GitHub issues into content
+        run: bun run sync:github-issues
         env:
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Import GPG key"
