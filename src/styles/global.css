@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-canvas: var(--canvas);
+  --color-elevated: var(--elevated);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-brand: var(--brand);
+  --color-subtle: var(--subtle);
+
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', monospace;
+}
+
+:root {
+  --canvas: #f5f4ed;
+  --elevated: #faf9f5;
+  --primary: #141413;
+  --secondary: #5e5d59;
+  --tertiary: #87867f;
+  --brand: #c96442;
+  --subtle: #f0eee6;
+  color-scheme: light;
+}
+
+html.dark,
+html[data-theme='dark'] {
+  --canvas: #141413;
+  --elevated: #30302e;
+  --primary: #faf9f5;
+  --secondary: #b0aea5;
+  --tertiary: #87867f;
+  --brand: #d97757;
+  --subtle: #30302e;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  html,
+  body {
+    @apply m-0 min-h-full bg-canvas font-sans text-primary antialiased;
+    line-height: 1.6;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  img {
+    @apply block max-w-full;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[800px];
+  }
+
+  .content-enter {
+    animation: content-enter 220ms ease-out;
+  }
+
+  .theme-sun {
+    display: none;
+  }
+
+  .site-logo {
+    filter: none;
+  }
+
+  html.dark .theme-moon,
+  html[data-theme='dark'] .theme-moon {
+    display: none;
+  }
+
+  html.dark .theme-sun,
+  html[data-theme='dark'] .theme-sun {
+    display: block;
+  }
+
+  html.dark .site-logo,
+  html[data-theme='dark'] .site-logo {
+    filter: brightness(0) invert(1);
+  }
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  background-color: var(--canvas);
+}
+
+::view-transition-group(root),
+::view-transition-image-pair(root) {
+  animation: none;
+  background-color: var(--canvas);
+}

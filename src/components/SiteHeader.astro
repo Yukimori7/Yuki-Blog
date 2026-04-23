@@ -1,0 +1,63 @@
+---
+import { siteConfig } from '../config/constants'
+
+interface Props {
+  currentPath: string
+}
+
+const { currentPath } = Astro.props
+
+const isActive = (href: string) => {
+  if (href === '/') {
+    return currentPath === '/' || currentPath.startsWith('/posts/')
+  }
+
+  return currentPath.startsWith(href)
+}
+---
+
+<header class="mb-10 flex items-center justify-between border-b border-subtle py-5 md:mb-12 md:py-6">
+  <a class="group inline-flex items-center" href="/" aria-label="返回首页">
+    <img
+      src="/logo.svg"
+      alt="YukiMori Logo"
+      class="site-logo h-auto w-8 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:opacity-85 sm:w-9 md:w-10"
+    />
+  </a>
+
+  <nav class="flex flex-wrap items-center gap-4 sm:gap-6" aria-label="主导航">
+    {
+      siteConfig.navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={[
+            'relative pb-1 text-base leading-none font-medium transition-colors after:absolute after:-bottom-[3px] after:left-0 after:h-[2px] after:w-full after:origin-left after:rounded-full after:bg-current after:transition-transform after:duration-200',
+            isActive(link.href)
+              ? 'text-primary after:scale-x-100'
+              : 'text-secondary after:scale-x-0 hover:text-primary hover:after:scale-x-100',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))
+    }
+    <button
+      id="theme-toggle"
+      type="button"
+      class="cursor-pointer p-1 text-secondary transition-colors hover:text-primary"
+      aria-label="切换主题"
+    >
+      <svg class="theme-moon h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79" />
+      </svg>
+      <svg
+        class="theme-sun h-5 w-5 fill-none stroke-current stroke-[1.7]"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      </svg>
+    </button>
+  </nav>
+</header>

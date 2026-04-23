@@ -1,0 +1,56 @@
+---
+import { getArchivePageHref } from '../lib/pagination'
+
+interface Props {
+  currentPage: number
+  totalPages: number
+}
+
+const { currentPage, totalPages } = Astro.props
+const hasPrev = currentPage > 1
+const hasNext = currentPage < totalPages
+---
+
+{
+  totalPages > 1 && (
+    <div class="mt-16 flex items-center justify-center gap-8 font-mono text-sm text-secondary">
+      {
+        hasPrev ? (
+          <a href={getArchivePageHref(currentPage - 1)} class="inline-flex items-center gap-2 hover:text-brand">
+            <svg class="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Prev
+          </a>
+        ) : (
+          <span class="inline-flex cursor-not-allowed items-center gap-2 opacity-45">
+            <svg class="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Prev
+          </span>
+        )
+      }
+
+      <span class="tracking-[0.2em]">{currentPage} / {totalPages}</span>
+
+      {
+        hasNext ? (
+          <a href={getArchivePageHref(currentPage + 1)} class="inline-flex items-center gap-2 hover:text-brand">
+            Next
+            <svg class="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        ) : (
+          <span class="inline-flex cursor-not-allowed items-center gap-2 opacity-45">
+            Next
+            <svg class="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        )
+      }
+    </div>
+  )
+}

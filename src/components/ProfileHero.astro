@@ -1,0 +1,36 @@
+---
+import { siteConfig } from '../config/constants'
+import SocialIcon from './SocialIcon.astro'
+---
+
+<section class="mb-12 flex flex-col items-start gap-5 sm:mb-20 sm:flex-row sm:items-center sm:gap-8">
+  <img
+    src={siteConfig.avatar}
+    alt="avatar"
+    loading="lazy"
+    class="aspect-square w-24 rounded-[1.4rem] border border-subtle object-cover sm:w-[120px] sm:rounded-[2rem]"
+  />
+  <div>
+    <h1 class="font-serif text-[2rem] leading-tight font-medium text-brand sm:text-[2.75rem]">
+      {siteConfig.name}
+    </h1>
+    <p class="text-[1.05rem] text-secondary sm:text-[1.25rem]">{siteConfig.slogan}</p>
+
+    <div class="mt-4 flex gap-4">
+      {
+        siteConfig.socials.map((item) => (
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noreferrer"
+            title={item.label}
+            aria-label={item.label}
+            class="text-tertiary transition-colors hover:text-brand"
+          >
+            <SocialIcon icon={item.icon} />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

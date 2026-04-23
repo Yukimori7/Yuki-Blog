@@ -1,0 +1,49 @@
+---
+import ArchivePagination from '../../components/ArchivePagination.astro'
+import PostList from '../../components/PostList.astro'
+import SiteFooter from '../../components/SiteFooter.astro'
+import SiteHeader from '../../components/SiteHeader.astro'
+import { getAllPosts } from '../../lib/posts'
+import { ARCHIVE_PAGE_SIZE, paginatePosts } from '../../lib/pagination'
+import Layout from '../../layouts/Layout.astro'
+import type { PostSummary } from '../../types/blog'
+
+interface Props {
+  pagePosts: PostSummary[]
+  currentPage: number
+  totalPages: number
+}
+
+export const getStaticPaths = async () => {
+  const allPosts = await getAllPosts()
+  const { totalPages } = paginatePosts(allPosts, 1, ARCHIVE_PAGE_SIZE)
+
+  if (totalPages <= 1) {
+    return []
+  }
+
+  return Array.from({ length: totalPages - 1 }, (_, index) => {
+    const page = index + 2
+    const { pagePosts, currentPage } = paginatePosts(allPosts, page, ARCHIVE_PAGE_SIZE)
+
+    return {
+      params: { page: String(page) },
+      props: { pagePosts, currentPage, totalPages },
+    }
+  })
+}
+
+const { pagePosts, currentPage, totalPages } = Astro.props as Props
+---
+
+<Layout title={`归档 - 第 ${currentPage} 页 | YukiMori's Blog`} description="全部文章归档页">
+  <SiteHeader currentPath={Astro.url.pathname} />
+
+  <main class="container-page content-enter mb-12">
+    <h1 class="mb-12 font-serif text-[clamp(2.4rem,8vw,3.25rem)] leading-[1.2] font-medium text-primary">归档</h1>
+    <PostList posts={pagePosts} mode="archive" />
+    <ArchivePagination currentPage={currentPage} totalPages={totalPages} />
+  </main>
+
+  <SiteFooter />
+</Layout>
