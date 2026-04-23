@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --color-canvas: var(--canvas);
@@ -9,9 +9,9 @@
   --color-brand: var(--brand);
   --color-subtle: var(--subtle);
 
-  --font-serif: Georgia, 'Times New Roman', serif;
-  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', monospace;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", monospace;
 }
 
 :root {
@@ -26,7 +26,7 @@
 }
 
 html.dark,
-html[data-theme='dark'] {
+html[data-theme="dark"] {
   --canvas: #141413;
   --elevated: #30302e;
   --primary: #faf9f5;
@@ -79,17 +79,17 @@ html[data-theme='dark'] {
   }
 
   html.dark .theme-moon,
-  html[data-theme='dark'] .theme-moon {
+  html[data-theme="dark"] .theme-moon {
     display: none;
   }
 
   html.dark .theme-sun,
-  html[data-theme='dark'] .theme-sun {
+  html[data-theme="dark"] .theme-sun {
     display: block;
   }
 
   html.dark .site-logo,
-  html[data-theme='dark'] .site-logo {
+  html[data-theme="dark"] .site-logo {
     filter: brightness(0) invert(1);
   }
 }

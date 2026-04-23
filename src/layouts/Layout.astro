@@ -9,10 +9,8 @@ interface Props {
   description?: string
 }
 
-const {
-  title = siteConfig.name,
-  description = siteConfig.description,
-} = Astro.props
+const { title = siteConfig.name, description = siteConfig.description } =
+  Astro.props
 ---
 
 <!doctype html>
