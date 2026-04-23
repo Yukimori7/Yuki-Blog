@@ -1,23 +1,162 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import { ClientRouter } from 'astro:transitions'
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+import { siteConfig } from '../config/constants'
+import '../styles/global.css'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = siteConfig.name,
+  description = siteConfig.description,
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <script is:inline>
+      ;(() => {
+        const setTheme = (theme) => {
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+            document.documentElement.setAttribute('data-theme', 'dark')
+          } else {
+            document.documentElement.classList.remove('dark')
+            document.documentElement.removeAttribute('data-theme')
+          }
+        }
+
+        const getTheme = () => {
+          if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme')
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        }
+
+        setTheme(getTheme())
+      })()
+    </script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body class="min-h-screen bg-canvas px-6 font-sans text-primary antialiased transition-colors duration-300">
+    <div class="mx-auto flex min-h-screen w-full max-w-[800px] flex-col">
+      <slot />
+    </div>
+
+    <button
+      id="back-to-top"
+      class="fixed right-8 bottom-8 z-40 translate-y-20 cursor-pointer rounded-full bg-brand p-3 text-white opacity-0 shadow-lg transition-all duration-500 focus:outline-none"
+      aria-label="返回顶部"
+      type="button"
+    >
+      <svg class="h-5 w-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <script is:inline>
+      const setTheme = (theme) => {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark')
+          document.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+          document.documentElement.removeAttribute('data-theme')
+        }
+      }
+
+      const getTheme = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme')
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+
+      const applyTheme = () => {
+        setTheme(getTheme())
+      }
+
+      const updateThemeButtonLabel = () => {
+        const themeToggleBtn = document.getElementById('theme-toggle')
+        if (!themeToggleBtn) return
+        const isDark = document.documentElement.classList.contains('dark')
+        themeToggleBtn.setAttribute('aria-label', isDark ? '切换到亮色模式' : '切换到暗色模式')
+      }
+
+      const scrollHandler = () => {
+        const backToTopBtn = document.getElementById('back-to-top')
+        if (!backToTopBtn) return
+        if (window.scrollY > 300) {
+          backToTopBtn.classList.remove('translate-y-20', 'opacity-0')
+        } else {
+          backToTopBtn.classList.add('translate-y-20', 'opacity-0')
+        }
+      }
+
+      const initBackToTop = () => {
+        const backToTopBtn = document.getElementById('back-to-top')
+        if (!backToTopBtn) return
+        window.removeEventListener('scroll', scrollHandler)
+        window.addEventListener('scroll', scrollHandler)
+        backToTopBtn.onclick = () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      }
+
+      const initThemeToggle = () => {
+        const themeToggleBtn = document.getElementById('theme-toggle')
+        if (!themeToggleBtn) return
+        themeToggleBtn.onclick = () => {
+          const isDark = document.documentElement.classList.contains('dark')
+          if (isDark) {
+            localStorage.setItem('theme', 'light')
+            setTheme('light')
+          } else {
+            localStorage.setItem('theme', 'dark')
+            setTheme('dark')
+          }
+          updateThemeButtonLabel()
+        }
+        updateThemeButtonLabel()
+      }
+
+      document.addEventListener('astro:page-load', () => {
+        initBackToTop()
+        initThemeToggle()
+      })
+
+      document.addEventListener('astro:before-swap', (event) => {
+        const nextDocument = event.newDocument
+        if (!nextDocument) return
+        const theme = getTheme()
+        if (theme === 'dark') {
+          nextDocument.documentElement.classList.add('dark')
+          nextDocument.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          nextDocument.documentElement.classList.remove('dark')
+          nextDocument.documentElement.removeAttribute('data-theme')
+        }
+      })
+
+      document.addEventListener('astro:after-swap', () => {
+        applyTheme()
+        updateThemeButtonLabel()
+      })
+
+      applyTheme()
+      initBackToTop()
+      initThemeToggle()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content'
+
+import SiteFooter from '../../components/SiteFooter.astro'
+import SiteHeader from '../../components/SiteHeader.astro'
+import { formatDate } from '../../lib/date'
+import Layout from '../../layouts/Layout.astro'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+}
+
+export const getStaticPaths = async () => {
+  const posts = await getCollection('blog')
+
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.(md|mdx)$/i, '').toLowerCase() },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props as Props
+const { Content } = await render(post)
+---
+
+<Layout title={`${post.data.title} | YukiMori's Blog`} description={post.data.description}>
+  <SiteHeader currentPath={Astro.url.pathname} />
+
+  <main class="container-page content-enter mb-12">
+    <h1 class="mb-6 font-serif text-[clamp(2.2rem,8vw,4rem)] leading-[1.1] font-medium text-primary">
+      {post.data.title}
+    </h1>
+
+    <div class="mb-12 flex flex-col items-start gap-3 text-tertiary sm:mb-12 sm:flex-row sm:items-center">
+      <span class="font-mono">{formatDate(post.data.createAt)}</span>
+      {
+        post.data.tags.length > 0 && (
+          <div class="flex gap-3">
+            {
+              post.data.tags.map((tag) => (
+                <span class="font-mono text-[0.85rem] text-tertiary">#{tag}</span>
+              ))
+            }
+          </div>
+        )
+      }
+    </div>
+
+    <article
+      class="text-secondary [&_a]:text-brand [&_blockquote]:my-6 [&_blockquote]:rounded-r-xl [&_blockquote]:border-l-4 [&_blockquote]:border-brand [&_blockquote]:bg-elevated [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:font-serif [&_blockquote]:text-[1.05rem] [&_blockquote]:text-primary [&_code]:font-mono [&_h2]:mt-9 [&_h2]:mb-3 [&_h2]:font-serif [&_h2]:text-[2rem] [&_h2]:leading-[1.2] [&_h2]:font-medium [&_h2]:text-primary [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:font-serif [&_h3]:text-[1.5rem] [&_h3]:font-medium [&_h3]:text-primary [&_h4]:mt-7 [&_h4]:mb-2 [&_h4]:font-serif [&_h4]:text-[1.2rem] [&_h4]:font-medium [&_h4]:text-primary [&_img]:rounded-2xl [&_img]:border [&_img]:border-subtle [&_p]:mb-4 [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-subtle [&_pre]:bg-elevated [&_pre]:p-4"
+    >
+      <Content />
+    </article>
+  </main>
+
+  <SiteFooter />
+</Layout>

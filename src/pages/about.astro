@@ -1,0 +1,28 @@
+---
+import ProfileHero from '../components/ProfileHero.astro'
+import SiteFooter from '../components/SiteFooter.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+import { siteConfig } from '../config/constants'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title={`关于 | ${siteConfig.name}`} description="关于页面">
+  <SiteHeader currentPath={Astro.url.pathname} />
+
+  <main class="container-page content-enter mb-12">
+    <ProfileHero />
+
+    <section class="py-1">
+      <h1 class="mb-4 font-serif text-[clamp(2rem,7vw,2.8rem)] leading-[1.2] font-medium text-primary">
+        {siteConfig.about.title}
+      </h1>
+      {
+        siteConfig.about.paragraphs.map((paragraph) => (
+          <p class="mt-0 mb-4 text-[1.03rem] text-secondary last:mb-0">{paragraph}</p>
+        ))
+      }
+    </section>
+  </main>
+
+  <SiteFooter />
+</Layout>
