@@ -66,7 +66,9 @@ function buildMarkdown(issue: Issue): string {
   const content = issue.body?.trim() ? issue.body.trim() : 'No description.'
 
   const tagLines =
-    tags.length > 0 ? tags.map((tag) => `  - ${yamlString(tag)}`).join('\n') : '  []'
+    tags.length > 0
+      ? tags.map((tag) => `  - ${yamlString(tag)}`).join('\n')
+      : '  []'
 
   return [
     '---',
@@ -90,7 +92,7 @@ function buildMarkdown(issue: Issue): string {
 async function fetchAllIssuesWithOctokit(
   octokit: Octokit,
   owner: string,
-  repo: string
+  repo: string,
 ): Promise<Issue[]> {
   const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
     owner,
@@ -119,7 +121,9 @@ async function main() {
   console.log(`[Start] Sync issues for ${owner}/${repo}`)
   console.log(`[Config] blogDir=${blogDir}`)
   console.log('[Config] source=env(GITHUB_OWNER,GITHUB_REPO,GITHUB_TOKEN?)')
-  console.log(`[Config] token=${token ? 'provided' : 'not provided (may hit API rate limits)'}`)
+  console.log(
+    `[Config] token=${token ? 'provided' : 'not provided (may hit API rate limits)'}`,
+  )
 
   const repoData = await octokit.rest.repos.get({ owner, repo })
   const ownerLogin = repoData.data.owner.login.toLowerCase()
@@ -128,21 +132,26 @@ async function main() {
   const allIssues = await fetchAllIssuesWithOctokit(octokit, owner, repo)
   const pureIssues = allIssues.filter((item) => !item.pull_request)
   const ownerFiltered = pureIssues.filter(
-    (item) => (item.user?.login ?? '').toLowerCase() === ownerLogin
+    (item) => (item.user?.login ?? '').toLowerCase() === ownerLogin,
   )
   for (const issue of pureIssues) {
-    const excludedNotOwner = (issue.user?.login ?? '').toLowerCase() !== ownerLogin
+    const excludedNotOwner =
+      (issue.user?.login ?? '').toLowerCase() !== ownerLogin
     console.log(
-      `[Issue] #${issue.number} | state=${issue.state} | user=${issue.user?.login ?? 'unknown'} | excludedNotOwner=${excludedNotOwner}`
+      `[Issue] #${issue.number} | state=${issue.state} | user=${issue.user?.login ?? 'unknown'} | excludedNotOwner=${excludedNotOwner}`,
     )
   }
   const openIssues = ownerFiltered.filter((item) => item.state === 'open')
 
   console.log(`[Stats] total(raw): ${allIssues.length}`)
   console.log(`[Stats] total(issues-only): ${pureIssues.length}`)
-  console.log(`[Stats] excluded(non-owner issues): ${pureIssues.length - ownerFiltered.length}`)
+  console.log(
+    `[Stats] excluded(non-owner issues): ${pureIssues.length - ownerFiltered.length}`,
+  )
   console.log(`[Stats] open(after filter): ${openIssues.length}`)
-  console.log(`[Stats] closed(after filter): ${ownerFiltered.length - openIssues.length}`)
+  console.log(
+    `[Stats] closed(after filter): ${ownerFiltered.length - openIssues.length}`,
+  )
 
   await resetBlogDirectory(blogDir)
   console.log('[Clean] reset blog directory (all existing files removed)')
@@ -150,7 +159,8 @@ async function main() {
   const writtenFiles: string[] = []
 
   for (const issue of openIssues) {
-    const safeTitle = sanitizeFileNamePart(issue.title) || `issue-${issue.number}`
+    const safeTitle =
+      sanitizeFileNamePart(issue.title) || `issue-${issue.number}`
     const targetFile = `${issue.number}-${safeTitle}.md`
     const targetPath = path.join(blogDir, targetFile)
 

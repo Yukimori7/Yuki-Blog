@@ -8,9 +8,7 @@ const byDateDesc = (a: { createdAt: Date }, b: { createdAt: Date }) =>
 
 const getPostSlug = (id: string) => id.replace(/\.(md|mdx)$/i, '').toLowerCase()
 
-export const mapPostSummary = (
-  entry: CollectionEntry<'blog'>,
-): PostSummary => {
+export const mapPostSummary = (entry: CollectionEntry<'blog'>): PostSummary => {
   const slug = getPostSlug(entry.id)
 
   return {

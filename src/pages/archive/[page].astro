@@ -24,7 +24,11 @@ export const getStaticPaths = async () => {
 
   return Array.from({ length: totalPages - 1 }, (_, index) => {
     const page = index + 2
-    const { pagePosts, currentPage } = paginatePosts(allPosts, page, ARCHIVE_PAGE_SIZE)
+    const { pagePosts, currentPage } = paginatePosts(
+      allPosts,
+      page,
+      ARCHIVE_PAGE_SIZE,
+    )
 
     return {
       params: { page: String(page) },

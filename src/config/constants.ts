@@ -9,8 +9,7 @@ export interface SocialLink {
 export const siteConfig = {
   name: "YukiMori's Blog",
   slogan: 'Code for fun, Code for ACG',
-  avatar:
-    '/images/avatar.jpeg',
+  avatar: '/images/avatar.jpeg',
   description: '一个记录技术、ACG 与生活灵感的个人博客。',
   navLinks: [
     { label: '首页', href: '/' },
@@ -33,6 +32,6 @@ export const siteConfig = {
   },
   footer: {
     copyright: `© ${new Date().getFullYear()} YukiMori`,
-    poweredBy: 'Powered by Astro',
+    poweredBy: 'Powered by Astro, Design by Claude',
   },
 } as const

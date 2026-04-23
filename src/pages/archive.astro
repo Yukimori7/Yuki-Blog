@@ -8,7 +8,11 @@ import { ARCHIVE_PAGE_SIZE, paginatePosts } from '../lib/pagination'
 import Layout from '../layouts/Layout.astro'
 
 const allPosts = await getAllPosts()
-const { pagePosts, currentPage, totalPages } = paginatePosts(allPosts, 1, ARCHIVE_PAGE_SIZE)
+const { pagePosts, currentPage, totalPages } = paginatePosts(
+  allPosts,
+  1,
+  ARCHIVE_PAGE_SIZE,
+)
 ---
 
 <Layout title="归档 | YukiMori's Blog" description="全部文章归档页">
