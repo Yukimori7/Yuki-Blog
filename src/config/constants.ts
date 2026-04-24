@@ -14,13 +14,14 @@ export const siteConfig = {
   navLinks: [
     { label: '首页', href: '/' },
     { label: '归档', href: '/archive/' },
+    { label: '番剧', href: '/bangumi/' },
     { label: '关于', href: '/about/' },
   ],
   socials: [
     { label: 'GitHub', href: 'https://github.com/Yukimori7', icon: 'github' },
-    { label: 'X', href: 'https://x.com', icon: 'x' },
+    { label: 'X', href: 'https://x.com/yukimori_7', icon: 'x' },
     { label: 'Bilibili', href: 'https://www.bilibili.com', icon: 'bilibili' },
-    { label: '邮箱', href: 'mailto:hello@example.com', icon: 'mail' },
+    { label: '邮箱', href: 'mailto:i@tawawa.com', icon: 'mail' },
   ] satisfies SocialLink[],
   about: {
     title: '关于我',
@@ -32,6 +33,6 @@ export const siteConfig = {
   },
   footer: {
     copyright: `© ${new Date().getFullYear()} YukiMori`,
-    poweredBy: 'Powered by Astro, Design by Claude',
+    poweredBy: 'Powered by Astro',
   },
 } as const
