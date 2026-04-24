@@ -1,0 +1,526 @@
+---
+import SiteFooter from '../components/SiteFooter.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+import { siteConfig } from '../config/constants'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title={`番剧 | ${siteConfig.name}`} description="番剧追番记录">
+  <SiteHeader currentPath={Astro.url.pathname} />
+
+  <main class="container-page content-enter bangumi-page mb-12" id="bangumi-page">
+    <section class="quote-section" aria-labelledby="quote-title">
+      <h1 id="quote-title" class="page-title">番剧</h1>
+      <div class="quote-card" id="quote-card" aria-live="polite">
+        <p class="quote-mark quote-mark-open" aria-hidden="true">『</p>
+        <p class="quote-text" id="quote-text">正在抽取一言...</p>
+        <p class="quote-mark quote-mark-close" aria-hidden="true">』</p>
+        <p class="quote-meta" id="quote-meta"></p>
+      </div>
+    </section>
+
+    <section class="collection-section" aria-labelledby="collection-title">
+      <h2 id="collection-title" class="section-title">我的收藏</h2>
+
+      <div class="tabs" role="tablist" aria-label="番剧分类">
+        <button class="tab is-active" type="button" role="tab" data-type="watching" aria-selected="true">
+          在看
+        </button>
+        <button class="tab" type="button" role="tab" data-type="watched" aria-selected="false">已看</button>
+        <button class="tab" type="button" role="tab" data-type="want" aria-selected="false">想看</button>
+      </div>
+
+      <div class="collection-grid" id="collection-grid" aria-live="polite">
+        <p class="state-text">正在加载番剧列表...</p>
+      </div>
+
+      <div class="load-more-wrap">
+        <button class="load-more" type="button" id="load-more">展示更多</button>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Layout>
+
+<script is:inline>
+  ;(() => {
+    const PAGE_SIZE = 12
+    const bangumiApis = {
+      watching: 'https://bangumi.tawawa.moe/watching.json',
+      watched: 'https://bangumi.tawawa.moe/watched.json',
+      want: 'https://bangumi.tawawa.moe/want.json',
+    }
+
+    const state = {
+      currentType: 'watching',
+      cache: {
+        watching: null,
+        watched: null,
+        want: null,
+      },
+      visibleCount: {
+        watching: PAGE_SIZE,
+        watched: PAGE_SIZE,
+        want: PAGE_SIZE,
+      },
+    }
+
+    const quoteTextEl = document.getElementById('quote-text')
+    const quoteMetaEl = document.getElementById('quote-meta')
+    const gridEl = document.getElementById('collection-grid')
+    const loadMoreEl = document.getElementById('load-more')
+    const tabEls = Array.from(document.querySelectorAll('.tab'))
+
+    const toSafeText = (value) => {
+      if (value === null || value === undefined) return ''
+      return String(value)
+    }
+
+    const formatEpisode = (item, type) => {
+      const rawTotal = Number(item?.eps)
+      const hasTotal = Number.isFinite(rawTotal) && rawTotal > 0
+      const total = hasTotal ? rawTotal : null
+      const current = type === 'watched' ? total ?? 0 : Number(item?.ep_status) || 0
+      const percent = total ? Math.min(100, (current / total) * 100) : 0
+
+      return {
+        current,
+        totalText: total ? String(total) : '?',
+        percent,
+      }
+    }
+
+    const getCover = (item) => item?.images?.large || item?.images?.common || item?.images?.medium || '/images/avatar.jpeg'
+
+    const renderList = () => {
+      if (!gridEl) return
+
+      const allItems = state.cache[state.currentType]
+      if (!Array.isArray(allItems)) {
+        gridEl.innerHTML = '<p class="state-text">正在加载番剧列表...</p>'
+        if (loadMoreEl) loadMoreEl.style.display = 'none'
+        return
+      }
+
+      if (allItems.length === 0) {
+        gridEl.innerHTML = '<p class="state-text">这个分类下还没有数据。</p>'
+        if (loadMoreEl) loadMoreEl.style.display = 'none'
+        return
+      }
+
+      const visible = state.visibleCount[state.currentType]
+      const items = allItems.slice(0, visible)
+
+      const html = items
+        .map((item) => {
+          const epInfo = formatEpisode(item, state.currentType)
+          const title = toSafeText(item?.name_cn || item?.name)
+          const subtitle = toSafeText(item?.name)
+          const cover = toSafeText(getCover(item))
+          const subjectId = toSafeText(item?.subject_id)
+
+          return `
+            <a class="bangumi-card" href="https://bgm.tv/subject/${subjectId}" target="_blank" rel="noreferrer">
+              <div class="cover-wrap">
+                <img class="cover" src="${cover}" alt="${title || subtitle}" loading="lazy" />
+              </div>
+              <div class="card-body">
+                <h3 class="card-title" title="${title}">${title || subtitle || '未命名番剧'}</h3>
+                <p class="card-subtitle" title="${subtitle}">${subtitle || '暂无原名'}</p>
+
+                <div class="progress-meta">
+                  <span>${epInfo.current} / ${epInfo.totalText}</span>
+                  <span>${Math.round(epInfo.percent)}%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" style="width:${epInfo.percent}%"></div>
+                </div>
+              </div>
+            </a>
+          `
+        })
+        .join('')
+
+      gridEl.innerHTML = html
+
+      if (loadMoreEl) {
+        loadMoreEl.style.display = visible < allItems.length ? 'inline-flex' : 'none'
+      }
+    }
+
+    const setActiveTab = (type) => {
+      for (const tab of tabEls) {
+        const active = tab.dataset.type === type
+        tab.classList.toggle('is-active', active)
+        tab.setAttribute('aria-selected', String(active))
+      }
+    }
+
+    const fetchBangumiList = async (type) => {
+      const normalizeBangumiItems = (payload) => {
+        if (Array.isArray(payload)) return payload
+        if (!payload || typeof payload !== 'object') return []
+
+        if (Array.isArray(payload.data)) return payload.data
+        if (Array.isArray(payload.items)) return payload.items
+        if (Array.isArray(payload.list)) return payload.list
+        if (Array.isArray(payload[type])) return payload[type]
+
+        const firstArray = Object.values(payload).find((value) => Array.isArray(value))
+        if (Array.isArray(firstArray)) return firstArray
+
+        console.warn('[bangumi] 未识别的数据结构：', payload)
+        return []
+      }
+
+      const url = bangumiApis[type]
+      if (!url) return
+      if (Array.isArray(state.cache[type])) return
+
+      const response = await fetch(url, { cache: 'no-store' })
+      if (!response.ok) {
+        throw new Error(`Bangumi API ${type} 请求失败：${response.status}`)
+      }
+
+      const result = await response.json()
+      state.cache[type] = normalizeBangumiItems(result)
+    }
+
+    const switchType = async (type) => {
+      state.currentType = type
+      setActiveTab(type)
+      if (gridEl) {
+        gridEl.innerHTML = '<p class="state-text">正在加载番剧列表...</p>'
+      }
+
+      try {
+        await fetchBangumiList(type)
+      } catch (_error) {
+        state.cache[type] = []
+        if (gridEl) {
+          gridEl.innerHTML = '<p class="state-text">加载失败，请稍后重试。</p>'
+        }
+      }
+
+      renderList()
+    }
+
+    const fetchRandomQuote = async () => {
+      if (!quoteTextEl || !quoteMetaEl) return
+
+      try {
+        const typeResponse = await fetch('https://hitokoto.tawawa.moe/type.json', { cache: 'no-store' })
+        if (!typeResponse.ok) {
+          throw new Error(`type.json 请求失败：${typeResponse.status}`)
+        }
+
+        const typeData = await typeResponse.json()
+        const types = Object.keys(typeData).filter((key) => Number(typeData[key]) > 0)
+
+        if (types.length === 0) {
+          throw new Error('没有可用的一言类型')
+        }
+
+        const type = types[Math.floor(Math.random() * types.length)]
+        const count = Number(typeData[type])
+        const index = Math.floor(Math.random() * count)
+
+        const quoteResponse = await fetch(`https://hitokoto.tawawa.moe/${type}/${index}.json`, {
+          cache: 'no-store',
+        })
+
+        if (!quoteResponse.ok) {
+          throw new Error(`一言请求失败：${quoteResponse.status}`)
+        }
+
+        const quote = await quoteResponse.json()
+        quoteTextEl.textContent = quote?.hitokoto || quote?.text || '暂时没有抽到句子。'
+
+        const from = quote?.from ? `《${quote.from}》` : '未知出处'
+        const author = quote?.from_who ? ` · ${quote.from_who}` : ''
+        quoteMetaEl.textContent = `${from}${author}`
+      } catch (_error) {
+        quoteTextEl.textContent = '一言加载失败，请稍后刷新重试。'
+        quoteMetaEl.textContent = ''
+      }
+    }
+
+    const initBangumi = () => {
+      const pageEl = document.getElementById('bangumi-page')
+      if (!pageEl || pageEl.dataset.ready === 'true') return
+      pageEl.dataset.ready = 'true'
+
+      fetchRandomQuote()
+      switchType('watching')
+
+      for (const tab of tabEls) {
+        tab.addEventListener('click', () => {
+          const type = tab.dataset.type
+          if (!type || type === state.currentType) return
+          switchType(type)
+        })
+      }
+
+      if (loadMoreEl) {
+        loadMoreEl.addEventListener('click', () => {
+          state.visibleCount[state.currentType] += PAGE_SIZE
+          renderList()
+        })
+      }
+    }
+
+    document.addEventListener('astro:page-load', initBangumi)
+    initBangumi()
+  })()
+</script>
+
+<style>
+  .bangumi-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+  }
+
+  .page-title {
+    margin: 0 0 0.9rem;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 7vw, 2.8rem);
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--color-primary);
+  }
+
+  .quote-card {
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    padding: 0.35rem 0;
+    box-shadow: none;
+  }
+
+  .quote-mark {
+    margin: 0;
+    color: var(--color-secondary);
+    font-size: clamp(1.1rem, 3.3vw, 1.7rem);
+    line-height: 1;
+  }
+
+  .quote-mark-open {
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+
+  .quote-mark-close {
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+
+  .quote-text {
+    margin: 0 auto;
+    color: var(--color-primary);
+    font-size: clamp(1.1rem, 3.3vw, 1.85rem);
+    line-height: 1.7;
+    text-align: center;
+    max-width: 24ch;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+  }
+
+  .quote-meta {
+    margin: 0.75rem 0 0;
+    color: var(--color-secondary);
+    font-size: clamp(0.88rem, 1.9vw, 1.12rem);
+    text-align: right;
+    letter-spacing: 0.02em;
+  }
+
+  .quote-meta:empty {
+    display: none;
+  }
+
+  .quote-meta:not(:empty)::before {
+    content: '\2014\2014 ';
+  }
+
+  .collection-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .section-title {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .tab {
+    border: 1px solid var(--color-subtle);
+    background: var(--color-elevated);
+    color: var(--color-secondary);
+    border-radius: 999px;
+    padding: 0.4rem 0.95rem;
+    line-height: 1;
+    font-size: 0.94rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab:hover {
+    color: var(--color-primary);
+  }
+
+  .tab.is-active {
+    border-color: var(--color-brand);
+    color: #faf9f5;
+    background: var(--color-brand);
+  }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    min-height: 5rem;
+  }
+
+  .bangumi-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-subtle);
+    border-radius: 0.95rem;
+    background: var(--color-elevated);
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.03) 0 3px 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bangumi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: rgba(0, 0, 0, 0.08) 0 10px 24px;
+  }
+
+  .cover-wrap {
+    width: 100%;
+    aspect-ratio: 5 / 7;
+    background: var(--color-subtle);
+  }
+
+  .cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  .card-title {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 0.96rem;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-subtitle {
+    margin: 0.2rem 0 0.7rem;
+    color: var(--color-tertiary);
+    font-size: 0.78rem;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .progress-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--color-secondary);
+    margin-bottom: 0.35rem;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 0.34rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background: color-mix(in oklab, var(--color-subtle) 80%, var(--color-primary) 20%);
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: var(--color-brand);
+    transition: width 0.35s ease;
+  }
+
+  .load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.4rem;
+  }
+
+  .load-more {
+    border: 1px solid var(--color-subtle);
+    background: var(--color-elevated);
+    color: var(--color-primary);
+    border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .load-more:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  .state-text {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--color-secondary);
+    padding: 0.6rem 0;
+  }
+
+  @media (max-width: 640px) {
+    .quote-text {
+      max-width: 100%;
+      line-height: 1.62;
+    }
+
+    .quote-meta {
+      font-size: 0.9rem;
+    }
+
+    .collection-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .card-body {
+      padding: 0.62rem;
+    }
+  }
+
+  @media (min-width: 760px) {
+    .collection-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>
