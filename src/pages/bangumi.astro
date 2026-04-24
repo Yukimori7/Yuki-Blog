@@ -9,8 +9,7 @@ import Layout from '../layouts/Layout.astro'
   <SiteHeader currentPath={Astro.url.pathname} />
 
   <main class="container-page content-enter bangumi-page mb-12" id="bangumi-page">
-    <section class="quote-section" aria-labelledby="quote-title">
-      <h1 id="quote-title" class="page-title">番剧</h1>
+    <section class="quote-section">
       <div class="quote-card" id="quote-card" aria-live="polite">
         <p class="quote-mark quote-mark-open" aria-hidden="true">『</p>
         <p class="quote-text" id="quote-text">正在抽取一言...</p>
@@ -132,17 +131,17 @@ import Layout from '../layouts/Layout.astro'
             <a class="bangumi-card" href="https://bgm.tv/subject/${subjectId}" target="_blank" rel="noreferrer">
               <div class="cover-wrap">
                 <img class="cover" src="${cover}" alt="${title || subtitle}" loading="lazy" />
-              </div>
-              <div class="card-body">
-                <h3 class="card-title" title="${title}">${title || subtitle || '未命名番剧'}</h3>
-                <p class="card-subtitle" title="${subtitle}">${subtitle || '暂无原名'}</p>
+                <div class="card-overlay">
+                  <h3 class="card-title" title="${title}">${title || subtitle || '未命名番剧'}</h3>
+                  <p class="card-subtitle" title="${subtitle}">${subtitle || '暂无原名'}</p>
 
-                <div class="progress-meta">
-                  <span>${epInfo.current} / ${epInfo.totalText}</span>
-                  <span>${Math.round(epInfo.percent)}%</span>
-                </div>
-                <div class="progress-track">
-                  <div class="progress-fill" style="width:${epInfo.percent}%"></div>
+                  <div class="progress-meta">
+                    <span>${epInfo.current} / ${epInfo.totalText}</span>
+                    <span>${Math.round(epInfo.percent)}%</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width:${epInfo.percent}%"></div>
+                  </div>
                 </div>
               </div>
             </a>
@@ -246,7 +245,7 @@ import Layout from '../layouts/Layout.astro'
         quoteTextEl.textContent = quote?.hitokoto || quote?.text || '暂时没有抽到句子。'
 
         const from = quote?.from ? `《${quote.from}》` : '未知出处'
-        const author = quote?.from_who ? ` · ${quote.from_who}` : ''
+        const author = quote?.from_who ? ` · 「${quote.from_who}」` : ''
         quoteMetaEl.textContent = `${from}${author}`
       } catch (_error) {
         quoteTextEl.textContent = '一言加载失败，请稍后刷新重试。'
@@ -321,6 +320,8 @@ import Layout from '../layouts/Layout.astro'
   }
 
   .quote-mark-close {
+    width: fit-content;
+    margin-left: auto;
     text-align: right;
     margin-top: 0.5rem;
   }
@@ -337,7 +338,8 @@ import Layout from '../layouts/Layout.astro'
   }
 
   .quote-meta {
-    margin: 0.75rem 0 0;
+    width: fit-content;
+    margin: 0.75rem 0 0 auto;
     color: var(--color-secondary);
     font-size: clamp(0.88rem, 1.9vw, 1.12rem);
     text-align: right;
@@ -401,81 +403,93 @@ import Layout from '../layouts/Layout.astro'
     min-height: 5rem;
   }
 
-  .bangumi-card {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--color-subtle);
-    border-radius: 0.95rem;
-    background: var(--color-elevated);
+  :global(.bangumi-card) {
+    display: block;
+    border: 1px solid color-mix(in oklab, var(--color-subtle) 72%, transparent);
+    border-radius: 1.1rem;
+    background: var(--color-subtle);
     overflow: hidden;
-    box-shadow: rgba(0, 0, 0, 0.03) 0 3px 12px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.06) 0 8px 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
-  .bangumi-card:hover {
+  :global(.bangumi-card:hover) {
     transform: translateY(-2px);
-    box-shadow: rgba(0, 0, 0, 0.08) 0 10px 24px;
+    border-color: color-mix(in oklab, var(--color-brand) 36%, var(--color-subtle));
+    box-shadow: rgba(0, 0, 0, 0.12) 0 14px 32px;
   }
 
-  .cover-wrap {
+  :global(.cover-wrap) {
+    position: relative;
     width: 100%;
     aspect-ratio: 5 / 7;
     background: var(--color-subtle);
   }
 
-  .cover {
+  :global(.cover) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .card-body {
-    padding: 0.75rem;
+  :global(.card-overlay) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 25%;
+    padding: 0.62rem 0.62rem 0.56rem;
+    background:
+      linear-gradient(to top, rgba(8, 8, 8, 0.94), rgba(8, 8, 8, 0.7) 58%, transparent),
+      color-mix(in oklab, var(--color-brand) 24%, transparent);
   }
 
-  .card-title {
+  :global(.card-title) {
     margin: 0;
-    color: var(--color-primary);
-    font-size: 0.96rem;
+    color: #fffaf2;
+    font-size: 0.86rem;
     line-height: 1.35;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .card-subtitle {
-    margin: 0.2rem 0 0.7rem;
-    color: var(--color-tertiary);
-    font-size: 0.78rem;
+  :global(.card-subtitle) {
+    margin: 0.14rem 0 0.52rem;
+    color: rgba(255, 250, 242, 0.72);
+    font-size: 0.68rem;
     line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .progress-meta {
+  :global(.progress-meta) {
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-family: var(--font-mono);
-    font-size: 0.76rem;
-    color: var(--color-secondary);
-    margin-bottom: 0.35rem;
+    font-size: 0.68rem;
+    color: rgba(255, 250, 242, 0.78);
+    margin-bottom: 0.3rem;
   }
 
-  .progress-track {
+  :global(.progress-track) {
     width: 100%;
-    height: 0.34rem;
+    height: 0.28rem;
     border-radius: 999px;
     overflow: hidden;
-    background: color-mix(in oklab, var(--color-subtle) 80%, var(--color-primary) 20%);
+    background: rgba(255, 250, 242, 0.22);
   }
 
-  .progress-fill {
+  :global(.progress-fill) {
     height: 100%;
     width: 0;
     border-radius: 999px;
-    background: var(--color-brand);
+    background: #fffaf2;
     transition: width 0.35s ease;
   }
 
