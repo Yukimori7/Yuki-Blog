@@ -23,14 +23,6 @@ export const siteConfig = {
     { label: 'Bilibili', href: 'https://www.bilibili.com', icon: 'bilibili' },
     { label: '邮箱', href: 'mailto:i@tawawa.com', icon: 'mail' },
   ] satisfies SocialLink[],
-  about: {
-    title: '关于我',
-    paragraphs: [
-      '你好，我是 YukiMori，一个偏爱可读性与审美一致性的开发者。',
-      '我会在这里记录 Astro 建站、前端工程实践、以及 ACG 相关内容。',
-      '这个博客遵循温暖的 Claude 风格设计语言，强调阅读节奏与长期维护。',
-    ],
-  },
   footer: {
     copyright: `© ${new Date().getFullYear()} YukiMori`,
     poweredBy: 'Powered by Astro',

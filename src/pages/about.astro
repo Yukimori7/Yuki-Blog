@@ -1,9 +1,20 @@
 ---
+import { getCollection, render } from 'astro:content'
+
 import ProfileHero from '../components/ProfileHero.astro'
 import SiteFooter from '../components/SiteFooter.astro'
 import SiteHeader from '../components/SiteHeader.astro'
 import { siteConfig } from '../config/constants'
 import Layout from '../layouts/Layout.astro'
+
+const aboutEntries = await getCollection('about')
+const about = aboutEntries[0]
+
+if (!about) {
+  throw new Error('Missing about content: src/content/about.md')
+}
+
+const { Content } = await render(about)
 ---
 
 <Layout title={`关于 | ${siteConfig.name}`} description="关于页面">
@@ -14,13 +25,11 @@ import Layout from '../layouts/Layout.astro'
 
     <section class="py-1">
       <h1 class="mb-4 font-serif text-[clamp(2rem,7vw,2.8rem)] leading-[1.2] font-medium text-primary">
-        {siteConfig.about.title}
+        {about.data.title}
       </h1>
-      {
-        siteConfig.about.paragraphs.map((paragraph) => (
-          <p class="mt-0 mb-4 text-[1.03rem] text-secondary last:mb-0">{paragraph}</p>
-        ))
-      }
+      <article class="text-[1.03rem] text-secondary [&_a]:text-brand [&_blockquote]:my-6 [&_blockquote]:rounded-r-xl [&_blockquote]:border-l-4 [&_blockquote]:border-brand [&_blockquote]:bg-elevated [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:font-serif [&_blockquote]:text-[1.05rem] [&_blockquote]:text-primary [&_code]:font-mono [&_h2]:mt-9 [&_h2]:mb-3 [&_h2]:font-serif [&_h2]:text-[2rem] [&_h2]:leading-[1.2] [&_h2]:font-medium [&_h2]:text-primary [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:font-serif [&_h3]:text-[1.5rem] [&_h3]:font-medium [&_h3]:text-primary [&_h4]:mt-7 [&_h4]:mb-2 [&_h4]:font-serif [&_h4]:text-[1.2rem] [&_h4]:font-medium [&_h4]:text-primary [&_img]:rounded-2xl [&_img]:border [&_img]:border-subtle [&_p]:mt-0 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-subtle [&_pre]:bg-elevated [&_pre]:p-4">
+        <Content />
+      </article>
     </section>
   </main>
 
