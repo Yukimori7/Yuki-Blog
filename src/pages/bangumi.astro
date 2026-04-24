@@ -66,11 +66,19 @@ import Layout from '../layouts/Layout.astro'
       },
     }
 
-    const quoteTextEl = document.getElementById('quote-text')
-    const quoteMetaEl = document.getElementById('quote-meta')
-    const gridEl = document.getElementById('collection-grid')
-    const loadMoreEl = document.getElementById('load-more')
-    const tabEls = Array.from(document.querySelectorAll('.tab'))
+    let quoteTextEl = null
+    let quoteMetaEl = null
+    let gridEl = null
+    let loadMoreEl = null
+    let tabEls = []
+
+    const refreshElements = () => {
+      quoteTextEl = document.getElementById('quote-text')
+      quoteMetaEl = document.getElementById('quote-meta')
+      gridEl = document.getElementById('collection-grid')
+      loadMoreEl = document.getElementById('load-more')
+      tabEls = Array.from(document.querySelectorAll('.tab'))
+    }
 
     const toSafeText = (value) => {
       if (value === null || value === undefined) return ''
@@ -250,6 +258,7 @@ import Layout from '../layouts/Layout.astro'
       const pageEl = document.getElementById('bangumi-page')
       if (!pageEl || pageEl.dataset.ready === 'true') return
       pageEl.dataset.ready = 'true'
+      refreshElements()
 
       fetchRandomQuote()
       switchType('watching')
