@@ -13,7 +13,7 @@ const posts = await getLatestPosts(5)
 <Layout title={siteConfig.name} description={siteConfig.description}>
   <SiteHeader currentPath={Astro.url.pathname} />
 
-  <main class="container-page content-enter">
+  <main class="container-page content-enter mt-8">
     <ProfileHero />
     <PostList posts={posts} mode="home" />
   </main>
