@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Codex local workspace files
 .codex/
+
+AGENTS.md
+Claude.md

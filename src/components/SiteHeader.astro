@@ -31,7 +31,7 @@ const isActive = (href: string) => {
         <a
           href={link.href}
           class:list={[
-            'relative pb-1 text-base leading-none font-medium transition-colors after:absolute after:-bottom-[3px] after:left-0 after:h-[2px] after:w-full after:origin-left after:rounded-full after:bg-current after:transition-transform after:duration-200',
+            'relative pb-1 text-base leading-none font-medium transition-colors after:absolute after:-bottom-0.75 after:left-0 after:h-0.5 after:w-full after:origin-left after:rounded-full after:bg-current after:transition-transform after:duration-200',
             isActive(link.href)
               ? 'text-primary after:scale-x-100'
               : 'text-secondary after:scale-x-0 hover:text-primary hover:after:scale-x-100',
