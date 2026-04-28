@@ -26,29 +26,29 @@ const { Content } = await render(post)
 <Layout title={`${post.data.title} | YukiMori's Blog`} description={post.data.description}>
   <SiteHeader currentPath={Astro.url.pathname} />
 
-  <main class="container-page content-enter mb-12">
-    <h1 class="mb-6 font-serif text-[clamp(2.2rem,8vw,4rem)] leading-[1.1] font-medium text-primary">
+  <main class="content-enter mb-16 mt-8">
+    <h1 class="mb-5 font-serif text-[clamp(1.9rem,5.5vw,3.25rem)] leading-[1.1] font-medium text-primary">
       {post.data.title}
     </h1>
 
-    <div class="mb-12 flex flex-col items-start gap-3 text-tertiary sm:mb-12 sm:flex-row sm:items-center">
-      <span class="font-mono">{formatDate(post.data.createAt)}</span>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <time class="font-mono text-[0.85rem] text-tertiary">{formatDate(post.data.createAt)}</time>
       {
         post.data.tags.length > 0 && (
-          <div class="flex gap-3">
-            {
-              post.data.tags.map((tag) => (
-                <span class="font-mono text-[0.85rem] text-tertiary">#{tag}</span>
-              ))
-            }
+          <div class="flex flex-wrap gap-2">
+            {post.data.tags.map((tag) => (
+              <span class="font-mono text-[0.75rem] tracking-wide text-tertiary">
+                #{tag}
+              </span>
+            ))}
           </div>
         )
       }
     </div>
 
-    <article
-      class="text-secondary [&_a]:text-brand [&_blockquote]:my-6 [&_blockquote]:rounded-r-xl [&_blockquote]:border-l-4 [&_blockquote]:border-brand [&_blockquote]:bg-elevated [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:font-serif [&_blockquote]:text-[1.05rem] [&_blockquote]:text-primary [&_code]:font-mono [&_h2]:mt-9 [&_h2]:mb-3 [&_h2]:font-serif [&_h2]:text-[2rem] [&_h2]:leading-[1.2] [&_h2]:font-medium [&_h2]:text-primary [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:font-serif [&_h3]:text-[1.5rem] [&_h3]:font-medium [&_h3]:text-primary [&_h4]:mt-7 [&_h4]:mb-2 [&_h4]:font-serif [&_h4]:text-[1.2rem] [&_h4]:font-medium [&_h4]:text-primary [&_img]:rounded-2xl [&_img]:border [&_img]:border-subtle [&_p]:mb-4 [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-subtle [&_pre]:bg-elevated [&_pre]:p-4"
-    >
+    <div class="mb-10 mt-6 h-px bg-subtle"></div>
+
+    <article class="prose">
       <Content />
     </article>
   </main>

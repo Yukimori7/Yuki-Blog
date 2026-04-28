@@ -92,6 +92,207 @@ html[data-theme="dark"] {
   html[data-theme="dark"] .site-logo {
     filter: brightness(0) invert(1);
   }
+
+  /* Article prose styles — Claude Design System */
+  .prose {
+    font-size: 1.15rem;
+    line-height: 1.65;
+    color: var(--secondary);
+  }
+
+  .prose p {
+    margin-bottom: 1.35em;
+  }
+
+  .prose h2 {
+    margin-top: 3rem;
+    margin-bottom: 0.85rem;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+
+  .prose h3 {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  .prose h4 {
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    line-height: 1.3;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  .prose h5,
+  .prose h6 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    line-height: 1.35;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  .prose a {
+    color: var(--brand);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--brand) 35%, transparent);
+    transition: text-decoration-color 200ms;
+  }
+
+  .prose a:hover {
+    text-decoration-color: var(--brand);
+  }
+
+  .prose blockquote {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-left: 3px solid var(--brand);
+    border-radius: 0 8px 8px 0;
+    background: var(--elevated);
+    padding: 1.2rem 1.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.03rem;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--primary);
+  }
+
+  .prose blockquote p {
+    margin-bottom: 0;
+  }
+
+  .prose :not(pre) > code {
+    border-radius: 5px;
+    border: 1px solid var(--subtle);
+    background: var(--elevated);
+    padding: 0.15em 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.87em;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+
+  .prose pre {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--subtle);
+    background: var(--elevated);
+    padding: 1.35rem 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.94rem;
+    line-height: 1.65;
+    letter-spacing: -0.02em;
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 0px 0px 1px;
+  }
+
+  .prose pre code {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  .prose img {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--subtle);
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 24px;
+  }
+
+  .prose hr {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    border: none;
+    border-top: 1px solid var(--subtle);
+  }
+
+  .prose ul,
+  .prose ol {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose ul {
+    list-style-type: disc;
+  }
+
+  .prose ol {
+    list-style-type: decimal;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+    line-height: 1.65;
+  }
+
+  .prose li > ul,
+  .prose li > ol {
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .prose table {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--subtle);
+    overflow: hidden;
+    font-size: 0.94rem;
+    border-collapse: collapse;
+  }
+
+  .prose thead {
+    background: var(--elevated);
+  }
+
+  .prose th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--primary);
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .prose td {
+    padding: 0.75rem 1rem;
+    color: var(--secondary);
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .prose tr:last-child td {
+    border-bottom: none;
+  }
+
+  .prose strong {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .prose em {
+    font-style: italic;
+  }
 }
 
 @keyframes content-enter {
